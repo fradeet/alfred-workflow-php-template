@@ -114,9 +114,12 @@ output path:
 ./workflow-packager build/hello.alfredworkflow
 ```
 
-The destination directory must already exist. Packaging happens from a temporary
-copy, where `.DS_Store` files are removed and variables listed in
-`variablesdontexport` are cleared, so the source workflow is not modified.
+The destination directory must already exist. If Composer development
+dependencies are installed in `workflow/vendor`, the packager first runs
+`composer install --no-dev` in `workflow/` so they are not included in the
+package. The remaining packaging happens from a temporary copy, where
+`.DS_Store` files are removed and variables listed in `variablesdontexport` are
+cleared without modifying their source files.
 
 ## Customize the workflow
 

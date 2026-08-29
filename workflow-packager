@@ -6,6 +6,7 @@ set -euo pipefail
 readonly project_directory="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 readonly workflow_directory="${project_directory}/workflow"
 readonly info_plist="${workflow_directory}/info.plist"
+readonly composer_installed="${workflow_directory}/vendor/composer/installed.php"
 
 if [[ ! -f "${info_plist}" ]]; then
     echo "Could not find ${info_plist}." >&2
@@ -17,6 +18,13 @@ readonly workflow_name="$(/usr/libexec/PlistBuddy -c 'Print :name' "${info_plist
 if [[ -z "${workflow_name}" ]]; then
     echo "The workflow name in ${info_plist} cannot be empty." >&2
     exit 1
+fi
+
+if [[ -f "${composer_installed}" ]] \
+    && php -r 'exit((require $argv[1])["root"]["dev"] === true ? 0 : 1);' "${composer_installed}"
+then
+    echo "Composer development dependencies are installed; reinstalling without them."
+    composer install --working-dir="${workflow_directory}" --no-dev --no-interaction
 fi
 
 readonly workflow_file="${1:-${project_directory}/${workflow_name}.alfredworkflow}"
