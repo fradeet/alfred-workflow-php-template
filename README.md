@@ -96,6 +96,28 @@ php workflow/AlfredAdapter.php hello Ada Lovelace
 
 Both commands output `{"items":[{"title":"Hello Ada Lovelace"}]}`.
 
+## Package the workflow
+
+Package the contents of `workflow/` as an Alfred workflow from the repository
+root:
+
+```bash
+./workflow-packager
+```
+
+The command reads the workflow name from `workflow/info.plist` and creates
+`<workflow-name>.alfredworkflow` in the repository root. Generated workflow
+packages are ignored by Git. To choose another destination, pass the complete
+output path:
+
+```bash
+./workflow-packager build/hello.alfredworkflow
+```
+
+The destination directory must already exist. Packaging happens from a temporary
+copy, where `.DS_Store` files are removed and variables listed in
+`variablesdontexport` are cleared, so the source workflow is not modified.
+
 ## Customize the workflow
 
 - Add one `workflow/alfred_run_<operation>.sh` script for each operation exposed
