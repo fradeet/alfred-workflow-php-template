@@ -28,13 +28,13 @@ Alfred -> shell runner -> AlfredAdapter.php -> core class
 ### 3. Core Layer
 
 - Keep all logic that has no direct dependency on Alfred in `workflow/src/`.
-- Place each core class in the `Alfred\Workflow` namespace and follow PSR-4: the class name must match the filename.
+- Place each core class in the `Workflow` namespace and follow PSR-4: the class name must match the filename.
 - Core classes must not read Alfred environment variables or depend on Alfred user data implicitly. Pass required values to them explicitly.
 - Core classes must return plain PHP values. They must not contain Alfred Script Filter structures, JSON fields, or console output logic.
 
 ## Loading and Running
 
-- Composer maps `Alfred\Workflow\` to `workflow/src/` in `workflow/composer.json`.
+- Composer maps `Workflow\` to `workflow/src/` in `workflow/composer.json`.
 - `workflow/AlfredAdapter.php` loads core classes through `workflow/vendor/autoload.php`; do not directly `require` individual core source files.
 - Invoke the adapter as `php workflow/AlfredAdapter.php <task> [argument ...]`. The first positional argument selects the task; every remaining argument is forwarded to that task in order.
 - After adding or renaming a core class, run `composer dump-autoload --working-dir=workflow` to update the autoloader.

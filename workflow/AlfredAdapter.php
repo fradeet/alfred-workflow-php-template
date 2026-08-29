@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Alfred\Workflow\Hello;
+use Workflow\Hello;
 
 error_reporting(E_ALL);
 ini_set('display_errors', 'stderr');

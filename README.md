@@ -130,7 +130,7 @@ cleared without modifying their source files.
   Keep Alfred-specific PHP functions, core calls, result adaptation, JSON
   encoding, and standard output handling there.
 - Put Alfred-independent business logic in `workflow/src/` under the
-  `Alfred\Workflow` namespace. Core classes should accept explicit inputs and
+  `Workflow` namespace. Core classes should accept explicit inputs and
   return plain PHP values.
 - After adding or renaming a core class, refresh Composer's autoloader:
 

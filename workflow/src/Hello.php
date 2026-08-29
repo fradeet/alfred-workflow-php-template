@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Alfred\Workflow;
+namespace Workflow;
 
 final class Hello
 {

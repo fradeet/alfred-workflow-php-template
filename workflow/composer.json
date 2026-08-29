@@ -27,7 +27,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Alfred\\Workflow\\": "src/"
+      "Workflow\\": "src/"
     }
   }
 }
