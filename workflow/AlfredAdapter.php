@@ -9,6 +9,8 @@ ini_set('display_errors', 'stderr');
 
 require __DIR__.'/vendor/autoload.php';
 
+require __DIR__.'/AlfredScriptFilterType.php';
+
 /**
  * Dispatch a CLI task to the corresponding core class.
  *
@@ -23,12 +25,12 @@ function dispatchTask(string $task, array $arguments): string
 }
 
 /**
- * Adapt a plain title to Alfred's Script Filter JSON format.
+ * Encode an Alfred Script Filter response as JSON.
  */
-function toAlfredScriptFilterJson(string $title): string
+function toAlfredScriptFilterJson(AlfredSF $scriptFilter): string
 {
     return json_encode(
-        ['items' => [['title' => $title]]],
+        $scriptFilter,
         JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
     );
 }
@@ -46,7 +48,13 @@ function run(array $arguments): void
         throw new InvalidArgumentException('Usage: php AlfredAdapter.php <task> [argument ...]');
     }
 
-    echo toAlfredScriptFilterJson(dispatchTask($task, $arguments));
+    echo toAlfredScriptFilterJson(
+        new AlfredSF(
+            items: [
+                new AlfredSFItem(title: dispatchTask($task, $arguments)),
+            ],
+        ),
+    );
 }
 
 /**
@@ -78,7 +86,7 @@ function cliArguments(): array
 try {
     run(cliArguments());
 } catch (Throwable $exception) {
-    echo toAlfredScriptFilterJson($exception->getMessage());
+    echo toAlfredScriptFilterJson(RETURN_ERROR_ALFRED);
 
     exit(1);
 }
