@@ -13,6 +13,7 @@ Alfred -> shell runner -> AlfredAdapter.php -> core class
 - Put Alfred-facing shell scripts directly in `workflow/`.
 - Provide one script for each business operation that Alfred can invoke. Name it `alfred_run_<operation>.sh`, for example `workflow/alfred_run_hello.sh`.
 - Read Alfred user input and Alfred environment variables in this layer. Quote all values when forwarding them to PHP.
+- Pass the runner's business operation as the first adapter argument, followed by all operation arguments. Use `"$@"` when forwarding multiple positional arguments so their boundaries are preserved.
 - Each runner must invoke `workflow/AlfredAdapter.php`; it must not load or call a core class directly.
 - Keep runners thin. They may collect and forward Alfred runtime values, but must not contain business logic, build Alfred result data, or emit JSON themselves.
 - Resolve files relative to the runner's own directory so execution does not depend on the current working directory.
@@ -35,12 +36,14 @@ Alfred -> shell runner -> AlfredAdapter.php -> core class
 
 - Composer maps `Alfred\Workflow\` to `workflow/src/` in `workflow/composer.json`.
 - `workflow/AlfredAdapter.php` loads core classes through `workflow/vendor/autoload.php`; do not directly `require` individual core source files.
+- Invoke the adapter as `php workflow/AlfredAdapter.php <task> [argument ...]`. The first positional argument selects the task; every remaining argument is forwarded to that task in order.
 - After adding or renaming a core class, run `composer dump-autoload --working-dir=workflow` to update the autoloader.
 - Run the Hello example through its shell runner with `workflow/alfred_run_hello.sh`.
 
 ## Alfred Script Filter Output
 
-- Standard output must contain valid Alfred Script Filter JSON without logs or debugging text.
+- On successful execution, standard output must contain valid Alfred Script Filter JSON without logs or debugging text.
+- CLI usage and task errors must be converted to valid Alfred Script Filter JSON on standard output and must return a non-zero exit status.
 - Put each result in the top-level `items` array and use the `title` field for its title.
 - Encode JSON with `JSON_THROW_ON_ERROR` to prevent encoding failures from being ignored silently.
 - The current Hello example outputs `{"items":[{"title":"Hello Alfred"}]}`.
@@ -52,6 +55,7 @@ Run at least the following commands after making changes:
 ```bash
 bash -n workflow/*.sh
 workflow/alfred_run_hello.sh
+workflow/alfred_run_hello.sh "Ada Lovelace" "and team"
 cd workflow && vendor/bin/phpstan analyse src AlfredAdapter.php --no-progress
 cd workflow && vendor/bin/php-cs-fixer fix --dry-run --diff --using-cache=no
 ```

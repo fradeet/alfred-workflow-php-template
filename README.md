@@ -50,7 +50,7 @@ Use the included Alfred runner script:
 You can also invoke the PHP adapter directly:
 
 ```bash
-php workflow/AlfredAdapter.php
+php workflow/AlfredAdapter.php hello
 ```
 
 The command writes valid Alfred Script Filter JSON to standard output:
@@ -61,6 +61,13 @@ The command writes valid Alfred Script Filter JSON to standard output:
 
 PHP warnings and other displayed diagnostics are written to standard error so
 they do not corrupt Alfred's JSON input.
+
+CLI usage and task errors are also returned as Alfred Script Filter JSON, with
+a non-zero exit status. For example, an unknown task outputs:
+
+```json
+{"items":[{"title":"Unknown task: unknown"}]}
+```
 
 ## Connect it to Alfred
 
@@ -74,10 +81,20 @@ Create a workflow in Alfred and add a **Script Filter** object. Choose
 Alternatively, run the PHP adapter directly:
 
 ```bash
-php "$PWD/workflow/AlfredAdapter.php"
+php "$PWD/workflow/AlfredAdapter.php" hello
 ```
 
 Connect the Script Filter to the actions needed by your workflow.
+
+The adapter uses positional CLI arguments. The first argument selects the task,
+and all remaining arguments are forwarded to that task:
+
+```bash
+php workflow/AlfredAdapter.php hello Ada Lovelace
+./workflow/alfred_run_hello.sh Ada Lovelace
+```
+
+Both commands output `{"items":[{"title":"Hello Ada Lovelace"}]}`.
 
 ## Customize the workflow
 

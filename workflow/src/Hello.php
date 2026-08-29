@@ -6,8 +6,12 @@ namespace Alfred\Workflow;
 
 final class Hello
 {
-    public function __invoke(): string
+    public function __invoke(string ...$names): string
     {
-        return 'Hello Alfred';
+        if ([] === $names) {
+            return 'Hello Alfred';
+        }
+
+        return 'Hello '.implode(' ', $names);
     }
 }
