@@ -2,3 +2,4 @@ workflow/vendor/
 workflow/.sync.ffs_db
 .DS_Store
 /*.alfredworkflow
+workflow/.php-cs-fixer.cache
