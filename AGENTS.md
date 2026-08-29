@@ -1,29 +1,29 @@
-# 项目组织约定
+# Project Organization Conventions
 
-## 目录与职责
+## Directories and Responsibilities
 
-- `workflow/src/` 只存放核心业务逻辑，不得包含 Alfred Script Filter 的数据结构、JSON 字段或控制台输出逻辑。
-- 每个核心类使用 `Alfred\Workflow` 命名空间，并遵循 PSR-4：类名必须与文件名一致。
-- `workflow/AlfredAdapter.php` 是 Alfred 的适配与运行入口。所有 Alfred 相关逻辑均放在此文件，包括 Script Filter 数据组装、JSON 编码和向标准输出写入结果。
-- 核心类只返回与运行环境无关的普通 PHP 值，由 `AlfredAdapter.php` 将其转换为 Alfred 所需格式。
+- Keep only core business logic in `workflow/src/`. It must not contain Alfred Script Filter data structures, JSON fields, or console output logic.
+- Place each core class in the `Alfred\Workflow` namespace and follow PSR-4: the class name must match the filename.
+- Use `workflow/AlfredAdapter.php` as the Alfred adapter and runtime entry point. Keep all Alfred-specific logic in this file, including Script Filter data assembly, JSON encoding, and writing results to standard output.
+- Core classes must return plain PHP values that do not depend on the runtime environment. `AlfredAdapter.php` converts those values to the format Alfred requires.
 
-## 加载与运行
+## Loading and Running
 
-- Composer 在 `workflow/composer.json` 中将 `Alfred\Workflow\` 映射至 `workflow/src/`。
-- 运行入口通过 `workflow/vendor/autoload.php` 加载核心类，不直接 `require` 单个核心源文件。
-- 新增或重命名核心类后，运行 `composer dump-autoload --working-dir=workflow` 更新自动加载文件。
-- 使用 `php workflow/AlfredAdapter.php` 运行示例。
+- Composer maps `Alfred\Workflow\` to `workflow/src/` in `workflow/composer.json`.
+- The runtime entry point loads core classes through `workflow/vendor/autoload.php`; do not directly `require` individual core source files.
+- After adding or renaming a core class, run `composer dump-autoload --working-dir=workflow` to update the autoloader.
+- Run the example with `php workflow/AlfredAdapter.php`.
 
-## Alfred Script Filter 输出
+## Alfred Script Filter Output
 
-- 标准输出必须是有效的 Alfred Script Filter JSON，不得混入日志或调试文本。
-- 每个结果放在顶层 `items` 数组中；标题使用 `title` 字段。
-- JSON 编码使用 `JSON_THROW_ON_ERROR`，避免静默忽略编码错误。
-- 当前 Hello 示例的输出为 `{"items":[{"title":"Hello Alfred"}]}`。
+- Standard output must contain valid Alfred Script Filter JSON without logs or debugging text.
+- Put each result in the top-level `items` array and use the `title` field for its title.
+- Encode JSON with `JSON_THROW_ON_ERROR` to prevent encoding failures from being ignored silently.
+- The current Hello example outputs `{"items":[{"title":"Hello Alfred"}]}`.
 
-## 验证
+## Verification
 
-修改后至少执行：
+Run at least the following commands after making changes:
 
 ```bash
 php workflow/AlfredAdapter.php
