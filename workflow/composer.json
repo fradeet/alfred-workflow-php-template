@@ -26,6 +26,9 @@
     }
   },
   "autoload": {
+    "files": [
+      "src/AlfredAdapters/Support/functions.php"
+    ],
     "psr-4": {
       "Workflow\\": "src/"
     }

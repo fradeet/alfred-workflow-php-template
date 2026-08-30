@@ -41,16 +41,16 @@ composer install --working-dir=workflow
 
 ## Run the example
 
-Use the included Alfred runner script:
+Run the executable PHP adapter directly:
 
 ```bash
-./workflow/alfred_run_hello.sh
+workflow/src/AlfredAdapters/Hello.php
 ```
 
-You can also invoke the PHP adapter directly:
+The same adapter can also be invoked through PHP:
 
 ```bash
-php workflow/AlfredAdapter.php hello
+php workflow/src/AlfredAdapters/Hello.php
 ```
 
 The command writes valid Alfred Script Filter JSON to standard output:
@@ -62,36 +62,30 @@ The command writes valid Alfred Script Filter JSON to standard output:
 PHP warnings and other displayed diagnostics are written to standard error so
 they do not corrupt Alfred's JSON input.
 
-CLI usage and task errors are also returned as Alfred Script Filter JSON, with
-a non-zero exit status. For example, an unknown task outputs:
+CLI and business errors are also returned as Alfred Script Filter JSON, with a
+non-zero exit status:
 
 ```json
-{"items":[{"title":"Unknown task: unknown"}]}
+{"items":[{"title":"Unable to Load Results","subtitle":"Open the debugger and try again","valid":false}]}
 ```
 
 ## Connect it to Alfred
 
-Create a workflow in Alfred and add a **Script Filter** object. Choose
-`/bin/bash` as the language and use the included runner script:
+Create a workflow in Alfred and add a **Script Filter** object. Configure it to
+run the operation's executable adapter:
 
 ```bash
-"$PWD/workflow/alfred_run_hello.sh"
-```
-
-Alternatively, run the PHP adapter directly:
-
-```bash
-php "$PWD/workflow/AlfredAdapter.php" hello
+"$PWD/workflow/src/AlfredAdapters/Hello.php"
 ```
 
 Connect the Script Filter to the actions needed by your workflow.
 
-The adapter uses positional CLI arguments. The first argument selects the task,
-and all remaining arguments are forwarded to that task:
+Each business operation has its own adapter. All positional arguments are
+forwarded to that operation in order:
 
 ```bash
-php workflow/AlfredAdapter.php hello Ada Lovelace
-./workflow/alfred_run_hello.sh Ada Lovelace
+workflow/src/AlfredAdapters/Hello.php Ada Lovelace
+php workflow/src/AlfredAdapters/Hello.php Ada Lovelace
 ```
 
 Both commands output `{"items":[{"title":"Hello Ada Lovelace"}]}`.
@@ -123,19 +117,22 @@ cleared without modifying their source files.
 
 ## Customize the workflow
 
-- Add one `workflow/alfred_run_<operation>.sh` script for each operation exposed
-  to Alfred. Read Alfred user data and environment variables in these scripts,
-  then forward the values through `workflow/AlfredAdapter.php`.
-- Use `workflow/AlfredAdapter.php` as the single gateway for all runner scripts.
-  Keep Alfred-specific PHP functions, core calls, result adaptation, JSON
-  encoding, and standard output handling there.
+- Add one executable PHP file under `workflow/src/AlfredAdapters/` for each
+  operation exposed to Alfred. Use a PascalCase business name and begin the file
+  with `#!/usr/bin/env php`.
+- Read Alfred inputs in the operation adapter, call the core class, and adapt its
+  plain return value into the required Alfred response type.
+- Put Alfred data classes and enums in `AlfredAdapters/Type`, one type per file.
+  Put reusable input, output, environment, and error-handling functions in
+  `AlfredAdapters/Support`.
 - Put Alfred-independent business logic in `workflow/src/` under the
   `Workflow` namespace. Core classes should accept explicit inputs and
   return plain PHP values.
-- After adding or renaming a core class, refresh Composer's autoloader:
+- After adding or renaming classes or Support files, refresh Composer's
+  autoloader:
 
   ```bash
-  composer dump-autoload --working-dir=workflow
+  composer dump-autoload --working-dir=workflow --optimize
   ```
 
 ## Development checks
@@ -143,10 +140,9 @@ cleared without modifying their source files.
 Run the example and the project checks before committing changes:
 
 ```bash
-workflow/alfred_run_hello.sh
-cd workflow
-vendor/bin/phpstan analyse src AlfredAdapter.php --no-progress
-vendor/bin/php-cs-fixer fix --dry-run --diff --using-cache=no
+workflow/src/AlfredAdapters/Hello.php
+(cd workflow && vendor/bin/phpstan analyse src --debug --no-progress)
+(cd workflow && vendor/bin/php-cs-fixer fix --dry-run --diff --using-cache=no --sequential)
 ```
 
 ## License
