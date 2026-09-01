@@ -9,7 +9,7 @@ use Saloon\Http\Request;
 use Saloon\Http\Response;
 use Workflow\ExampleSdk\Dto\Todo;
 
-final class GetTodoRequest extends Request
+final class GetExampleTodoRequest extends Request
 {
     protected Method $method = Method::GET;
 
