@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 use Workflow\AlfredAdapters\Type\AlfredSF;
 use Workflow\AlfredAdapters\Type\AlfredSFItem;
-use Workflow\GetTodo;
+use Workflow\ExampleGetTodo;
 
 use function Workflow\AlfredAdapters\Support\alfredEnvironmentVariable;
 use function Workflow\AlfredAdapters\Support\run;
@@ -15,7 +15,7 @@ require dirname(__DIR__, 2).'/vendor/autoload.php';
 run(
     static function (array $arguments): AlfredSF {
         if (1 !== count($arguments)) {
-            throw new InvalidArgumentException('GetTodo expects exactly one todo ID.');
+            throw new InvalidArgumentException('ExampleGetTodo expects exactly one todo ID.');
         }
 
         $id = filter_var(
@@ -28,7 +28,7 @@ run(
             throw new InvalidArgumentException('The todo ID must be a positive integer.');
         }
 
-        $todo = (new GetTodo(
+        $todo = (new ExampleGetTodo(
             cacheDirectory: alfredEnvironmentVariable('alfred_workflow_cache'),
         ))($id);
 

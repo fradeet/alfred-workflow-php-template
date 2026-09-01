@@ -8,7 +8,7 @@ use Workflow\ExampleSdk\Connector\ExampleConnector;
 use Workflow\ExampleSdk\Dto\Todo;
 use Workflow\ExampleSdk\Request\GetExampleTodoRequest;
 
-final readonly class GetTodo
+final readonly class ExampleGetTodo
 {
     private ExampleConnector $connector;
 
