@@ -7,6 +7,7 @@ use Workflow\AlfredAdapters\Type\AlfredSF;
 use Workflow\AlfredAdapters\Type\AlfredSFItem;
 use Workflow\GetTodo;
 
+use function Workflow\AlfredAdapters\Support\alfredEnvironmentVariable;
 use function Workflow\AlfredAdapters\Support\run;
 
 require dirname(__DIR__, 2).'/vendor/autoload.php';
@@ -27,7 +28,9 @@ run(
             throw new InvalidArgumentException('The todo ID must be a positive integer.');
         }
 
-        $todo = (new GetTodo())($id);
+        $todo = (new GetTodo(
+            cacheDirectory: alfredEnvironmentVariable('alfred_workflow_cache'),
+        ))($id);
 
         return new AlfredSF(
             items: [

@@ -10,9 +10,14 @@ use Workflow\ExampleSdk\Request\GetExampleTodoRequest;
 
 final readonly class GetTodo
 {
+    private ExampleConnector $connector;
+
     public function __construct(
-        private ExampleConnector $connector = new ExampleConnector(),
-    ) {}
+        ?ExampleConnector $connector = null,
+        ?string $cacheDirectory = null,
+    ) {
+        $this->connector = $connector ?? new ExampleConnector($cacheDirectory);
+    }
 
     public function __invoke(int $id): Todo
     {
