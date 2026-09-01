@@ -4,20 +4,38 @@ declare(strict_types=1);
 
 namespace Workflow\ExampleSdk\Request;
 
+use Saloon\CachePlugin\Contracts\Cacheable;
+use Saloon\CachePlugin\Contracts\Driver;
+use Saloon\CachePlugin\Traits\HasCaching;
 use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
 use Workflow\ExampleSdk\Dto\Todo;
 
-final class GetExampleTodoRequest extends Request
+final class GetExampleTodoRequest extends Request implements Cacheable
 {
+    use HasCaching;
+
     protected Method $method = Method::GET;
 
-    public function __construct(private readonly int $id) {}
+    public function __construct(
+        private readonly int $id,
+        private readonly Driver $cacheDriver,
+    ) {}
 
     public function resolveEndpoint(): string
     {
         return '/todos/'.$this->id;
+    }
+
+    public function resolveCacheDriver(): Driver
+    {
+        return $this->cacheDriver;
+    }
+
+    public function cacheExpiryInSeconds(): int
+    {
+        return 300;
     }
 
     public function createDtoFromResponse(Response $response): Todo
