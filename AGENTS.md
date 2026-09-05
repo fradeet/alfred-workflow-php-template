@@ -10,12 +10,14 @@ Alfred 通常执行位于 `workflow/src/AlfredAdapters` 的编写的任务脚本
 
 	workflow/src/
 	├── AlfredAdapters/   # 用于将核心逻辑返回的结果处理为 Alfred 的格式
-	├── xxxSdk/       # HTTP 请求 SDK，使用 Saloon
+	├── xxxSdk/           # HTTP 请求 SDK，使用 Saloon
 	└── foo.php           # 核心逻辑，独立与各个软件平台的逻辑。
 
 # ◉ 技术要点
 
 - 核心逻辑（平台通用逻辑）与平台独有逻辑分离
+- 每个业务单独一个文件，并对应平台中的一个命令，例如 Hello。
+- 在核心层，可以独立出共享逻辑为一个新类。
 
 
 ## 测试与验证
